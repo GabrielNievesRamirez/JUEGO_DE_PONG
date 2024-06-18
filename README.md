@@ -1,6 +1,7 @@
 # JUEGO_DE_PONG
 
 Este es un juego de Pong desarrollado en HTML, CSS y JavaScript.
+![Captura de pantalla_18-6-2024_103912_ ](https://github.com/GabrielNievesRamirez/JUEGO_DE_PONG/blob/main/Captura%20de%20pantalla_18-6-2024_103912_.jpeg?raw=true)
 
 ## Descripción
 
