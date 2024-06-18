@@ -1,10 +1,4 @@
-Vamos a corregir el problema asegurándonos de que el menú se muestre correctamente al cargar la página. Aquí hay algunos puntos clave a verificar:
-
-1. El menú debe estar presente en el HTML.
-2. El botón debe tener el evento `onclick` configurado correctamente para iniciar el juego.
-3. Al iniciar el juego, el menú debe ocultarse y el escenario debe mostrarse.
-
-Aquí tienes el código corregido con estos puntos en mente:
+Parece que hubo un error al copiar el contenido del menú. Aquí tienes el código HTML corregido para asegurarte de que solo se muestre el botón del menú y se ejecute el juego correctamente cuando se haga clic en él.
 
 ```html
 <!DOCTYPE html>
@@ -86,8 +80,6 @@ body {
     transform: translate(-50%, 50%);
     border-radius: 50%;
 }
-
-/* Estilos de los temas eliminados para brevedad */
 
 /* Menú de inicio */
 .menu {
@@ -289,11 +281,11 @@ body {
     var escenarioElem = document.querySelector(".escenario");
     var estilos = ["tecno", "florido", "neon", "loco"]
     var bordesTablero = new Bordes(0, 800, 0, 600);
-    var dir = Math.random
-
-() * 2 * Math.PI;
+    var dir = Math.random() * 2 * Math.PI;
     var pelota = new Pelota(bordesTablero, document.querySelector(".pelota"), Math.random() * 150 + 250, Math.cos(dir), Math.sin(dir), 1.1);
-    var pala1 = new Pala(bordesTablero, document.querySelector(".pala1"), 300, 1.15, "a", "z");
+    var pala1 =
+
+ new Pala(bordesTablero, document.querySelector(".pala1"), 300, 1.15, "a", "z");
     var pala2 = new Pala(bordesTablero, document.querySelector(".pala2"), 300, 1.15, "ArrowUp", "ArrowDown");
     var marcador1 = new Marcador(document.querySelector(".marcador1"));
     var marcador2 = new Marcador(document.querySelector(".marcador2"));
@@ -357,4 +349,4 @@ body {
 </html>
 ```
 
-Este código debería mostrar el menú al cargar la página, y al hacer clic en "Iniciar Juego", el menú se ocultará y el juego comenzará a mostrarse y ejecutarse.
+Con este código, el menú solo muestra el botón "Iniciar Juego" y al hacer clic en él, el menú se oculta y el juego comienza. El marcador se actualizará correctamente cuando se anote un punto.
