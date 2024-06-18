@@ -276,7 +276,7 @@
         }
 
         var bordesTablero = new Bordes(0, 800, 0, 600);
-        var pelota = new Pelota(bordesTablero, document.querySelector(".pelota"), 300, 1.15, 0, 0.5);
+        var pelota = new Pelota(bordesTablero, document.querySelector(".pelota"), 200, 1.15, 0, 0.5); // Se redujo la velocidad de la pelota a 200
         var pala1 = new Pala(bordesTablero, document.querySelector(".pala1"), 300, 1.15, "ArrowUp", "ArrowDown");
         var pala2 = new Pala(bordesTablero, document.querySelector(".pala2"), 300, 1.15, "ArrowUp", "ArrowDown");
         var marcador1 = new Marcador(document.querySelector(".marcador1"));
@@ -313,7 +313,7 @@
 
         function ResetearJuego() {
             var dir = Math.random() * 2 * Math.PI;
-            pelota.Resetear(300, 400, 300, Math.cos(dir), Math.sin(dir));
+            pelota.Resetear(200, 400, 300, Math.cos(dir), Math.sin(dir)); // Velocidad de la pelota ajustada a 200
             pala1.y = pala2.y = 300;
             pala1.elem.style.bottom = pala2.elem.style.bottom = "50%";
             setTimeout(() => { requestAnimationFrame(Tick); }, 2000);
