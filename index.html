@@ -22,7 +22,6 @@
             border: 6px solid white;
             position: relative;
             overflow: hidden;
-            display: none; /* Inicialmente oculto */
         }
 
         .marcador {
@@ -80,253 +79,235 @@
             border-radius: 50%;
         }
 
-        /* Menú de inicio */
-        .menu {
-            width: 800px;
-            height: 600px;
-            margin: calc(50vh - 300px) auto 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 6px solid white;
-            position: relative;
+        @keyframes escalar-borde {
+            0% {
+                border-width: 8px;
+            }
+            100% {
+                border-width: 18px;
+            }
         }
 
-        .menu button {
-            font-size: 30px;
-            padding: 10px 20px;
-            cursor: pointer;
+        @keyframes arcoiris {
+            0% {
+                color: rgb(255, 58, 19);
+            }
+            17% {
+                color: yellow;
+            }
+            34% {
+                color: rgb(0, 255, 0);
+            }
+            50% {
+                color: cyan;
+            }
+            64% {
+                color: rgb(69, 45, 255);
+            }
+            83% {
+                color: rgb(255, 19, 239);
+            }
+            100% {
+                color: red;
+            }
         }
+
     </style>
 </head>
 <body>
 
-    <div class="menu">
-        <button onclick="iniciarJuego()">Iniciar Juego</button>
-    </div>
+<div class="escenario">
+    <div class="marcador marcador1">0</div>
+    <div class="marcador marcador2">0</div>
 
-    <div class="escenario">
-        <div class="marcador marcador1">0</div>
-        <div class="marcador marcador2">0</div>
+    <div class="pala pala1"></div>
+    <div class="pala pala2"></div>
 
-        <div class="pala pala1"></div>
-        <div class="pala pala2"></div>
+    <div class="red"></div>
+    <div class="pelota"></div>
+</div>
 
-        <div class="red"></div>
-        <div class="pelota"></div>
-    </div>
+<script>
+    // OBJETOS:
 
-    <script>
-        function iniciarJuego() {
-            document.querySelector('.menu').style.display = 'none';
-            document.querySelector('.escenario').style.display = 'block';
-            requestAnimationFrame(Tick);
+    class Bordes {
+        constructor(minX, maxX, minY, maxY) {
+            this.minX = minX;
+            this.maxX = maxX;
+            this.minY = minY;
+            this.maxY = maxY;
+        }
+    }
+
+    class ObjetoMovil {
+        constructor(bordesTablero, elem, vel) {
+            this.bordesTablero = bordesTablero;
+            this.vel = vel;
+            this.x = parseInt(getComputedStyle(elem).left);
+            this.y = parseInt(getComputedStyle(elem).bottom);
+            this.ancho = parseInt(getComputedStyle(elem).width);
+            this.alto = parseInt(getComputedStyle(elem).height);
+            this.elem = elem;
         }
 
-        class Bordes {
-            constructor(minX, maxX, minY, maxY) {
-                this.minX = minX;
-                this.maxX = maxX;
-                this.minY = minY;
-                this.maxY = maxY;
-            }
+        GetBordes() {
+            return new Bordes(this.x - this.ancho / 2, this.x + this.ancho / 2, this.y - this.alto / 2, this.y + this.alto / 2);
         }
 
-        class ObjetoMovil {
-            constructor(bordesTablero, elem, vel) {
-                this.bordesTablero = bordesTablero;
-                this.vel = vel;
-                this.x = parseInt(getComputedStyle(elem).left);
-                this.y = parseInt(getComputedStyle(elem).bottom);
-                this.ancho = parseInt(getComputedStyle(elem).width);
-                this.alto = parseInt(getComputedStyle(elem).height);
-                this.elem = elem;
-            }
+        Resetear() {
+            this.ancho = parseInt(getComputedStyle(this.elem).width);
+            this.alto = parseInt(getComputedStyle(this.elem).height);
+        }
+    }
 
-            GetBordes() {
-                return new Bordes(this.x - this.ancho / 2, this.x + this.ancho / 2, this.y - this.alto / 2, this.y + this.alto / 2);
-            }
-
-            Resetear() {
-                this.ancho = parseInt(getComputedStyle(this.elem).width);
-                this.alto = parseInt(getComputedStyle(this.elem).height);
-            }
+    class Pelota extends ObjetoMovil {
+        constructor(bordesTablero, elem, vel) {
+            super(bordesTablero, elem, vel);
+            this.angulo = Math.random() * Math.PI / 2 - Math.PI / 4;
         }
 
-        class Pelota extends ObjetoMovil {
-            constructor(bordesTablero, elem, vel, dirX, dirY, arrastre) {
-                super(bordesTablero, elem, vel);
-                this.dirX = dirX;
-                this.dirY = dirY;
-                this.arrastre = arrastre;
+        Mover() {
+            let x, y;
+
+            x = this.x + Math.cos(this.angulo) * this.vel;
+            y = this.y + Math.sin(this.angulo) * this.vel;
+            if (x < this.bordesTablero.minX) {
+                x = this.bordesTablero.minX;
+                this.angulo = Math.atan2(Math.sin(this.angulo), Math.cos(this.angulo) * -1);
+            }
+            if (x > this.bordesTablero.maxX) {
+                x = this.bordesTablero.maxX;
+                this.angulo = Math.atan2(Math.sin(this.angulo), Math.cos(this.angulo) * -1);
+            }
+            if (y < this.bordesTablero.minY) {
+                y = this.bordesTablero.minY;
+                this.angulo = Math.atan2(Math.sin(this.angulo) * -1, Math.cos(this.angulo));
+            }
+            if (y > this.bordesTablero.maxY) {
+                y = this.bordesTablero.maxY;
+                this.angulo = Math.atan2(Math.sin(this.angulo) * -1, Math.cos(this.angulo));
             }
 
-            Mover(deltaTime) {
-                this.x += this.dirX * this.vel * deltaTime;
-                this.y += this.dirY * this.vel * deltaTime;
-                this.elem.style.left = this.x + "px";
-                this.elem.style.bottom = this.y + "px";
-                this.ComprobarRebote();
-            }
+            this.elem.style.left = x + 'px';
+            this.elem.style.bottom = y + 'px';
+            this.x = x;
+            this.y = y;
+        }
+    }
 
-            ComprobarRebote() {
-                if (this.y + this.alto / 2 > this.bordesTablero.maxY && this.dirY > 0) {
-                    this.RebotarY();
-                } else if (this.y - this.alto / 2 < this.bordesTablero.minY && this.dirY < 0) {
-                    this.RebotarY();
-                }
-            }
+    class Pala extends ObjetoMovil {
+        constructor(bordesTablero, elem, vel) {
+            super(bordesTablero, elem, vel);
+            this.subiendo = false;
+            this.bajando = false;
+        }
 
-            RebotarX(inerciaY) {
-                this.dirX = -this.dirX;
-                this.dirY += inerciaY * this.arrastre;
-            }
-
-            RebotarY() {
-                this.dirY = -this.dirY;
-            }
-
-            ComprobarGol() {
-                if (this.x - this.ancho / 2 < this.bordesTablero.minX) {
-                    return 2;
-                } else if (this.x + this.ancho / 2 > this.bordesTablero.maxX) {
-                    return 1;
-                }
-                return 0;
-            }
-
-            Resetear(vel, x, y, dirX, dirY) {
-                this.vel = vel;
-                this.x = x;
+        Mover() {
+            if (this.subiendo && this.y < this.bordesTablero.maxY) {
+                let y = this.y + this.vel;
+                if (y > this.bordesTablero.maxY) y = this.bordesTablero.maxY;
+                this.elem.style.bottom = y + 'px';
                 this.y = y;
-                this.dirX = dirX;
-                this.dirY = dirY;
-                super.Resetear();
+            }
+            if (this.bajando && this.y > this.bordesTablero.minY) {
+                let y = this.y - this.vel;
+                if (y < this.bordesTablero.minY) y = this.bordesTablero.minY;
+                this.elem.style.bottom = y + 'px';
+                this.y = y;
             }
         }
+    }
 
-        class Pala extends ObjetoMovil {
-            constructor(bordesTablero, elem, vel, rozamiento, keyCodeArriba, keyCodeAbajo) {
-                super(bordesTablero, elem, vel);
+    class Marcador {
+        constructor(elem) {
+            this.elem = elem;
+            this.puntos = 0;
+        }
 
-                this.moviendose = false;
-                this.velActual = 0;
-                this.rozamiento = rozamiento;
-                this.keyCodeArriba = keyCodeArriba;
-                this.keyCodeAbajo = keyCodeAbajo;
-                document.addEventListener("keydown", this.IniciarMovimiento.bind(this));
-                document.addEventListener("keyup", this.FinalizarMovimiento.bind(this));
+        Incrementar() {
+            this.puntos++;
+            this.elem.textContent = this.puntos;
+        }
+    }
+
+    // FUNCIONES:
+
+    function detectarColision(pelota, pala) {
+        let pelotaBordes = pelota.GetBordes();
+        let palaBordes = pala.GetBordes();
+
+        if (pelotaBordes.minX <= palaBordes.maxX &&
+            pelotaBordes.maxX >= palaBordes.minX &&
+            pelotaBordes.minY <= palaBordes.maxY &&
+            pelotaBordes.maxY >= palaBordes.minY) {
+            return true;
+        }
+        return false;
+    }
+
+    function inicializar() {
+        let escenario = document.querySelector('.escenario');
+        let marcador1 = new Marcador(document.querySelector('.marcador1'));
+        let marcador2 = new Marcador(document.querySelector('.marcador2'));
+        let pelota = new Pelota(new Bordes(0, escenario.clientWidth, 0, escenario.clientHeight), document.querySelector('.pelota'), 8);
+        let pala1 = new Pala(new Bordes(0, escenario.clientWidth, 0, escenario.clientHeight), document.querySelector('.pala1'), 10);
+        let pala2 = new Pala(new Bordes(0, escenario.clientWidth, 0, escenario.clientHeight), document.querySelector('.pala2'), 10);
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'w') {
+                pala1.subiendo = true;
+            } else if (event.key === 's') {
+                pala1.bajando = true;
+            } else if (event.key === 'ArrowUp') {
+                pala2.subiendo = true;
+            } else if (event.key === 'ArrowDown') {
+                pala2.bajando = true;
+            }
+        });
+
+        document.addEventListener('keyup', function (event) {
+            if (event.key === 'w') {
+                pala1.subiendo = false;
+            } else if (event.key === 's') {
+                pala1.bajando = false;
+            } else if (event.key === 'ArrowUp') {
+                pala2.subiendo = false;
+            } else if (event.key === 'ArrowDown') {
+                pala2.bajando = false;
+            }
+        });
+
+        function loop() {
+            pelota.Mover();
+            pala1.Mover();
+            pala2.Mover();
+
+            if (detectarColision(pelota, pala1) || detectarColision(pelota, pala2)) {
+                pelota.angulo = Math.PI - pelota.angulo;
             }
 
-            IniciarMovimiento(evento) {
-                this.moviendose = true;
-                if (evento.key == this.keyCodeArriba) {
-                    this.velActual = this.vel;
-                } else if (evento.key == this.keyCodeAbajo) {
-                    this.velActual = -this.vel;
+            if (pelota.x <= pelota.bordesTablero.minX || pelota.x >= pelota.bordesTablero.maxX) {
+                if (pelota.x <= pelota.bordesTablero.minX) {
+                    marcador2.Incrementar();
+                } else {
+                    marcador1.Incrementar();
                 }
-            }
-            
-            FinalizarMovimiento(evento) {
-                if (evento.key == this.keyCodeAbajo || evento.key == this.keyCodeArriba) {
-                    this.moviendose = false;
-                }
+
+                pelota.elem.style.left = 'calc(50% - 12px)';
+                pelota.elem.style.bottom = 'calc(50% - 12px)';
+                pelota.x = parseInt(getComputedStyle(pelota.elem).left);
+                pelota.y = parseInt(getComputedStyle(pelota.elem).bottom);
+                pelota.angulo = Math.random() * Math.PI / 2 - Math.PI / 4;
             }
 
-            Mover(deltaTime) {
-                this.y += this.velActual * deltaTime;
-                if (this.y + this.alto / 2 > bordesTablero.maxY) this.y = this.bordesTablero.maxY - this.alto / 2;
-                if (this.y - this.alto / 2 < this.bordesTablero.minY) this.y = this.alto / 2;
-                this.elem.style.bottom = this.y + "px";
-            }
-
-            Frenar() {
-                if (!this.moviendose) {
-                    this.velActual /= this.rozamiento;
-                    if (Math.abs(this.velActual) < 0.1) this.velActual = 0;
-                }
-            }
-
-            ComprobarColision(bordes2) {
-                var bordes1 = this.GetBordes();
-                return !(
-                    bordes1.maxX < bordes2.minX ||
-                    bordes1.minX > bordes2.maxX ||
-                    bordes1.maxY < bordes2.minY ||
-                    bordes1.minY > bordes2.maxY
-                );
-            }
+            requestAnimationFrame(loop);
         }
 
-        class Marcador {
-            constructor(elem) {
-                this.elem = elem;
-                this.puntos = 0;
-                this.ActualizarMarcador();
-            }
+        loop();
+    }
 
-            GanarPunto() {
-                this.puntos++;
-                this.ActualizarMarcador();
-            }
-
-            ActualizarMarcador() {
-                this.elem.textContent = this.puntos;
-            }
-        }
-
-        var bordesTablero = new Bordes(0, 800, 0, 600);
-        var pelota = new Pelota(bordesTablero, document.querySelector(".pelota"), 200, 1.15, 0, 0.5); // Se redujo la velocidad de la pelota a 200
-        var pala1 = new Pala(bordesTablero, document.querySelector(".pala1"), 300, 1.15, "ArrowUp", "ArrowDown");
-        var pala2 = new Pala(bordesTablero, document.querySelector(".pala2"), 300, 1.15, "ArrowUp", "ArrowDown");
-        var marcador1 = new Marcador(document.querySelector(".marcador1"));
-        var marcador2 = new Marcador(document.querySelector(".marcador2"));
-        var deltaTime = 0;
-
-        function Tick(tiempo) {
-            requestAnimationFrame(Tick);
-            if (!tiempo) tiempo = 0;
-            var delta = tiempo - deltaTime;
-            deltaTime = tiempo;
-
-            pala1.Mover(delta);
-            pala2.Mover(delta);
-            pelota.Mover(delta);
-
-            if (pala1.ComprobarColision(pelota.GetBordes())) {
-                pelota.RebotarX((pala1.y - pelota.y) / (pala1.alto / 2));
-            }
-
-            if (pala2.ComprobarColision(pelota.GetBordes())) {
-                pelota.RebotarX((pala2.y - pelota.y) / (pala2.alto / 2));
-            }
-
-            var gol = pelota.ComprobarGol();
-            if (gol == 1) {
-                marcador1.GanarPunto();
-                ResetearJuego();
-            } else if (gol == 2) {
-                marcador2.GanarPunto();
-                ResetearJuego();
-            }
-        }
-
-        function ResetearJuego() {
-            var dir = Math.random() * 2 * Math.PI;
-            pelota.Resetear(200, 400, 300, Math.cos(dir), Math.sin(dir)); // Velocidad de la pelota ajustada a 200
-            pala1.y = pala2.y = 300;
-            pala1.elem.style.bottom = pala2.elem.style.bottom = "50%";
-            setTimeout(() => { requestAnimationFrame(Tick); }, 2000);
-        }
-
-        document.body.onkeydown = function (e) {
-            e = e || window.event;
-            if (e.key == "Escape") {
-                document.querySelector('.escenario').style.display = 'none';
-                document.querySelector('.menu').style.display = 'flex';
-            }
-        };
-    </script>
+    window.onload = inicializar;
+</script>
 
 </body>
 </html>
