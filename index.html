@@ -76,7 +76,7 @@
             position: absolute;
             bottom: 300px;
             left: 400px;
-            transform: translate(-50%, 50%);
+            transform: translate(-50%, -50%);
             border-radius: 50%;
         }
 
@@ -161,7 +161,7 @@
                 this.arrastre = arrastre;
             }
 
-            Mover() {
+            Mover(deltaTime) {
                 this.x += this.dirX * this.vel * deltaTime;
                 this.y += this.dirY * this.vel * deltaTime;
                 this.elem.style.left = this.x + "px";
@@ -233,7 +233,7 @@
                 }
             }
 
-            Mover() {
+            Mover(deltaTime) {
                 this.y += this.velActual * deltaTime;
                 if (this.y + this.alto / 2 > bordesTablero.maxY) this.y = this.bordesTablero.maxY - this.alto / 2;
                 if (this.y - this.alto / 2 < this.bordesTablero.minY) this.y = this.alto / 2;
@@ -262,20 +262,22 @@
             constructor(elem) {
                 this.elem = elem;
                 this.puntos = 0;
+                this.ActualizarMarcador();
             }
 
             GanarPunto() {
                 this.puntos++;
-                this.elem.innerHTML = "" + this.puntos;
+                this.ActualizarMarcador();
+            }
+
+            ActualizarMarcador() {
+                this.elem.textContent = this.puntos;
             }
         }
 
-        var escenarioElem = document.querySelector(".escenario");
-        var estilos = ["tecno", "florido", "neon", "loco"];
         var bordesTablero = new Bordes(0, 800, 0, 600);
-        var dir = Math.random() * 2 * Math.PI;
-        var pelota = new Pelota(bordesTablero, document.querySelector(".pelota"), Math.random() * 150 + 250, Math.cos(dir), Math.sin(dir), 1.1);
-        var pala1 = new Pala(bordesTablero, document.querySelector(".pala1"), 300, 1.15, "a", "z");
+        var pelota = new Pelota(bordesTablero, document.querySelector(".pelota"), 300, 1.15, 0, 0.5);
+        var pala1 = new Pala(bordesTablero, document.querySelector(".pala1"), 300, 1.15, "ArrowUp", "ArrowDown");
         var pala2 = new Pala(bordesTablero, document.querySelector(".pala2"), 300, 1.15, "ArrowUp", "ArrowDown");
         var marcador1 = new Marcador(document.querySelector(".marcador1"));
         var marcador2 = new Marcador(document.querySelector(".marcador2"));
@@ -287,9 +289,9 @@
             var delta = tiempo - deltaTime;
             deltaTime = tiempo;
 
-            pala1.Mover();
-            pala2.Mover();
-            pelota.Mover();
+            pala1.Mover(delta);
+            pala2.Mover(delta);
+            pelota.Mover(delta);
 
             if (pala1.ComprobarColision(pelota.GetBordes())) {
                 pelota.RebotarX((pala1.y - pelota.y) / (pala1.alto / 2));
@@ -311,7 +313,7 @@
 
         function ResetearJuego() {
             var dir = Math.random() * 2 * Math.PI;
-            pelota.Resetear(Math.random() * 150 + 250, 400, 300, Math.cos(dir), Math.sin(dir));
+            pelota.Resetear(300, 400, 300, Math.cos(dir), Math.sin(dir));
             pala1.y = pala2.y = 300;
             pala1.elem.style.bottom = pala2.elem.style.bottom = "50%";
             setTimeout(() => { requestAnimationFrame(Tick); }, 2000);
