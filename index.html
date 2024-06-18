@@ -1,3 +1,12 @@
+Vamos a corregir el problema asegurándonos de que el menú se muestre correctamente al cargar la página. Aquí hay algunos puntos clave a verificar:
+
+1. El menú debe estar presente en el HTML.
+2. El botón debe tener el evento `onclick` configurado correctamente para iniciar el juego.
+3. Al iniciar el juego, el menú debe ocultarse y el escenario debe mostrarse.
+
+Aquí tienes el código corregido con estos puntos en mente:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +20,7 @@
     margin: 0;
 }
 
-body{
+body {
     background: black;
     color: white;
 }
@@ -42,7 +51,7 @@ body{
 .marcador2 {
     right: 100px;
 }
-.pala  {
+.pala {
     width: 14px;
     height: 100px;
     background: white;
@@ -56,7 +65,7 @@ body{
 }
 
 .pala2 {
-    left: 760px
+    left: 760px;
 }
 
 .red {
@@ -149,7 +158,7 @@ body{
         }
 
         GetBordes() {
-            return new Bordes(this.x - this.ancho/2, this.x + this.ancho/2, this.y - this.alto/2, this.y + this.alto/2);
+            return new Bordes(this.x - this.ancho / 2, this.x + this.ancho / 2, this.y - this.alto / 2, this.y + this.alto / 2);
         }
 
         Resetear() {
@@ -169,19 +178,19 @@ body{
         Mover() {
             this.x += this.dirX * this.vel * deltaTime;
             this.y += this.dirY * this.vel * deltaTime;
-            this.elem.style.left = this.x+"px";
-            this.elem.style.bottom = this.y+"px";
+            this.elem.style.left = this.x + "px";
+            this.elem.style.bottom = this.y + "px";
             this.ComprobarRebote();
         }
 
         ComprobarRebote() {
-            if(this.y + this.alto/2 > this.bordesTablero.maxY && this.dirY > 0) {
+            if (this.y + this.alto / 2 > this.bordesTablero.maxY && this.dirY > 0) {
                 this.RebotarY();
-            } else if(this.y - this.alto/2 < this.bordesTablero.minY && this.dirY < 0) {
+            } else if (this.y - this.alto / 2 < this.bordesTablero.minY && this.dirY < 0) {
                 this.RebotarY();
             }
         }
-        
+
         RebotarX(inerciaY) {
             this.dirX = -this.dirX;
             this.dirY += inerciaY * this.arrastre;
@@ -192,9 +201,9 @@ body{
         }
 
         ComprobarGol() {
-            if(this.x - this.ancho/2 < this.bordesTablero.minX) {
+            if (this.x - this.ancho / 2 < this.bordesTablero.minX) {
                 return 2;
-            } else if(this.x + this.ancho/2 > this.bordesTablero.maxX) {
+            } else if (this.x + this.ancho / 2 > this.bordesTablero.maxX) {
                 return 1;
             }
             return 0;
@@ -211,10 +220,10 @@ body{
 
     }
 
-    class Pala extends ObjetoMovil{
+    class Pala extends ObjetoMovil {
         constructor(bordesTablero, elem, vel, rozamiento, keyCodeArriba, keyCodeAbajo) {
             super(bordesTablero, elem, vel);
-            
+
             this.moviendose = false;
             this.velActual = 0;
             this.rozamiento = rozamiento;
@@ -226,29 +235,29 @@ body{
 
         IniciarMovimiento(evento) {
             this.moviendose = true;
-            if(evento.key == this.keyCodeArriba) {
+            if (evento.key == this.keyCodeArriba) {
                 this.velActual = this.vel;
-            } else if(evento.key == this.keyCodeAbajo) {
+            } else if (evento.key == this.keyCodeAbajo) {
                 this.velActual = -this.vel;
             }
         }
         FinalizarMovimiento(evento) {
-            if(evento.key == this.keyCodeAbajo || evento.key == this.keyCodeArriba) {
+            if (evento.key == this.keyCodeAbajo || evento.key == this.keyCodeArriba) {
                 this.moviendose = false;
             }
         }
 
         Mover() {
             this.y += this.velActual * deltaTime;
-            if(this.y + this.alto/2 > bordesTablero.maxY) this.y = this.bordesTablero.maxY - this.alto/2;
-            if(this.y - this.alto/2 < this.bordesTablero.minY) this.y = this.alto/2;
-            this.elem.style.bottom = this.y+"px";
+            if (this.y + this.alto / 2 > bordesTablero.maxY) this.y = this.bordesTablero.maxY - this.alto / 2;
+            if (this.y - this.alto / 2 < this.bordesTablero.minY) this.y = this.alto / 2;
+            this.elem.style.bottom = this.y + "px";
         }
 
         Frenar() {
-            if(!this.moviendose) {
+            if (!this.moviendose) {
                 this.velActual /= this.rozamiento;
-                if(Math.abs(this.velActual) < 0.1) this.velActual = 0;
+                if (Math.abs(this.velActual) < 0.1) this.velActual = 0;
             }
         }
 
@@ -271,7 +280,7 @@ body{
 
         GanarPunto() {
             this.puntos++;
-            this.elem.innerHTML = ""+this.puntos;
+            this.elem.innerHTML = "" + this.puntos;
         }
     }
 
@@ -280,8 +289,10 @@ body{
     var escenarioElem = document.querySelector(".escenario");
     var estilos = ["tecno", "florido", "neon", "loco"]
     var bordesTablero = new Bordes(0, 800, 0, 600);
-    var dir = Math.random() * 2 * Math.PI;
-    var pelota = new Pelota(bordesTablero, document.querySelector(".pelota"), 300, Math.cos(dir), Math.sin(dir), 0.1);
+    var dir = Math.random
+
+() * 2 * Math.PI;
+    var pelota = new Pelota(bordesTablero, document.querySelector(".pelota"), Math.random() * 150 + 250, Math.cos(dir), Math.sin(dir), 1.1);
     var pala1 = new Pala(bordesTablero, document.querySelector(".pala1"), 300, 1.15, "a", "z");
     var pala2 = new Pala(bordesTablero, document.querySelector(".pala2"), 300, 1.15, "ArrowUp", "ArrowDown");
     var marcador1 = new Marcador(document.querySelector(".marcador1"));
@@ -333,7 +344,7 @@ body{
     // LOOP:
     var time = Date.now();
     var deltaTime = 0;
-    
+
     function Tick() {
         deltaTime = (Date.now() - time) / 1000; //deltaTime en segundos
         time = Date.now();
@@ -344,3 +355,6 @@ body{
 </script>
 </body>
 </html>
+```
+
+Este código debería mostrar el menú al cargar la página, y al hacer clic en "Iniciar Juego", el menú se ocultará y el juego comenzará a mostrarse y ejecutarse.
